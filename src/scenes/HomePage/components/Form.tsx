@@ -1,5 +1,4 @@
 import { useForm, Controller } from "react-hook-form";
-import { PhoneNumber, PhoneNumberUtil } from "google-libphonenumber";
 import DatePicker from "react-datepicker";
 import moment from "moment";
 
@@ -15,11 +14,22 @@ function daysUntilBirthday(date: Date) {
   return m1.diff(moment(), "days");
 }
 
-function validatePhoneNumber(value: string) {
-  const instance = PhoneNumberUtil.getInstance();
+// HELP TYPE
+let phoneNumberPromise: Promise<any> | null = null;
+function getLibPhoneNumber() {
+  if (!phoneNumberPromise) {
+    phoneNumberPromise = import("google-libphonenumber").then((lib) =>
+      lib.PhoneNumberUtil.getInstance()
+    );
+  }
+  return phoneNumberPromise;
+}
+
+async function validatePhoneNumber(value: string) {
+  const phoneUtil = await getLibPhoneNumber();
   try {
-    const phoneNumber = instance.parseAndKeepRawInput(value, "IS");
-    return instance.isValidNumberForRegion(phoneNumber as PhoneNumber, "IS");
+    const phoneNumber = phoneUtil.parseAndKeepRawInput(value, "IS");
+    return phoneUtil.isValidNumberForRegion(phoneNumber, "IS");
   } catch (e) {
     return false;
   }
@@ -108,3 +118,5 @@ export const Form = () => {
     </section>
   );
 };
+
+export default Form;

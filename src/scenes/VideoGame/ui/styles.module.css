@@ -32,7 +32,7 @@
 /* wheels */
 .turret::before,
 .turret::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 20px;
   height: 20px;

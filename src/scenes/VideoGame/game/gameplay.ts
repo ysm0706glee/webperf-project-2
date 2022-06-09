@@ -81,34 +81,32 @@ function updateEntities(state: GameState, updateTime: number, delta: number) {
   state.entities.forEach((entity) => {
     // Shots go in a straight direction based on their velocity.
     if (entity.type === "shot") {
-      const newPos = {
-        x: parseFloat(entity.el.style.left) + entity.velocity.x * delta,
-        y: parseFloat(entity.el.style.top) + entity.velocity.y * delta,
-      };
-      entity.el.style.left = `${newPos.x}px`;
-      entity.el.style.top = `${newPos.y}px`;
+      entity.x = entity.x + entity.velocity.x * delta;
+      entity.y = entity.y + entity.velocity.y * delta;
+
+      entity.el.style.transform = `translate(${entity.x}px, ${entity.y}px)`;
     } else if (entity.type === "enemy") {
       // Enemies move differently based on their variant.
       const { speed, variant } = entity.enemySpawn;
 
       // Normal and "sine" enemies generally move down according to some speed.
+      let newY: number = entity.y;
+      let newX: number = entity.x;
       if (variant === "normal" || variant === "sine") {
-        const newY =
-          parseFloat(entity.el.style.top) +
-          window.innerHeight * entity.enemySpawn.speed * delta;
-        entity.el.style.top = `${newY}px`;
+        newY = entity.y + window.innerHeight * entity.enemySpawn.speed * delta;
+        entity.y = newY;
       }
 
       // Additionally, "sine" enemies move in a sine wave pattern.
       if (variant === "sine") {
-        const newX =
+        newX =
           entity.enemySpawn.position.x +
           Math.sin(
             (updateTime * entity.enemySpawn.sineSpeed * window.innerHeight) /
               100
           ) *
             entity.enemySpawn.sineRadius;
-        entity.el.style.left = `${newX}px`;
+        entity.x = newX;
       }
 
       // Finally, "snake" enemies move according to predefined lines across the screen.
@@ -118,9 +116,11 @@ function updateEntities(state: GameState, updateTime: number, delta: number) {
           updateTime - entity.spawnTime,
           speed
         );
-        entity.el.style.left = `${newPos.x}px`;
-        entity.el.style.top = `${newPos.y}px`;
+        entity.x = newPos.x;
+        entity.y = newPos.y;
       }
+
+      entity.el.style.transform = `translate(${entity.x}px, ${entity.y}px)`;
     }
   });
 }

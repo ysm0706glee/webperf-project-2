@@ -5,7 +5,7 @@ import { Entity, GameState } from "./types";
  * Create the initial game state.
  */
 export const initialState = (): GameState => {
-  const level = 1;
+  const level = 7;
   const enemySpawns = createLevel(level);
   return {
     entityContainerEl: null,
@@ -88,8 +88,13 @@ export function killAllEntities(state: GameState) {
  * Clean up all "dead" entities from the game state.
  */
 export function removeDeadEntities(state: GameState) {
-  state.entities = state.entities.reduce<Entity[]>(
-    (array, item) => (item.dead ? array : [...array, item]),
-    []
-  );
+  for (const entity of state.entities) {
+    if (!entity.dead) {
+      [...state.entities, entity];
+    }
+  }
+  // state.entities = state.entities.reduce<Entity[]>(
+  //   (array, item) => (item.dead ? array : [...array, item]),
+  //   []
+  // );
 }

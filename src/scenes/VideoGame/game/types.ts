@@ -62,6 +62,8 @@ export type EnemySpawn = EnemySpawnNormal | EnemySpawnSine | EnemySpawnSnake;
 interface EntityBase {
   el: HTMLElement;
   dead?: boolean;
+  x: number;
+  y: number;
 }
 
 export interface Enemy extends EntityBase {
